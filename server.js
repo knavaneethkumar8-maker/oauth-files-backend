@@ -56,7 +56,7 @@ app.get('/auth/google/callback',
     console.log(req.user);
     console.log(req.user.username);
     console.log(req.user.email);
-    res.redirect('/myfile.html');
+    res.redirect('https://oauth-files-media.vercel.app/profile');
   }
 );
 
@@ -71,7 +71,6 @@ app.get('/myfile', (req, res) => {
   console.log('request came');
   res.sendFile('myfile.html');
 });
-
 
 mongoose.connection.once('open', () => {
   console.log('Server connected to database');
