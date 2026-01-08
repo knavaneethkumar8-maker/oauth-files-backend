@@ -9,8 +9,8 @@ const cors = require('cors');
 const corsOptions = require('./config/corsConfig');
 const logger = require('./middleware/logEvents');
 const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const storeUserDetails = require('./middleware/storeUser');
+const googleStrategy = require('./middleware/googleStrategy');
+const googleCallbackHandler = require('./middleware/googleAuth');
 
 dotenv.config();
 const PORT = process.env.PORT || 3500;
@@ -25,28 +25,8 @@ app.use(logger);
 app.use(express.static(path.join(__dirname, 'public')));
 
 //middleware
-
-
 //oauth
-passport.use(new GoogleStrategy({
-  clientID : process.env.GOOGLE_CLIENT_ID,
-  clientSecret : process.env.GOOGLE_CLIENT_SECRET,
-  callbackURL : '/auth/google/callback'
-}, async(accessToken, refreshToken, profile, done) => {
-  const email = profile.emails[0].value;
-  const user = {
-    username : profile.displayName,
-    email,
-    userId : email.split('@')[0]
-  };
-  storeUserDetails(user);
-  console.log('profile sent');
-  return done(null, user);
-}));
-
-
-
-
+passport.use(googleStrategy);
 //routes
 app.get('/auth/google', 
   passport.authenticate('google', {scope : ["profile", "email"]})
@@ -54,15 +34,10 @@ app.get('/auth/google',
 
 app.get('/auth/google/callback', 
   passport.authenticate('google', {session : false}),
-  (req, res) => {
-    const user = req.user;
-    const userId = user.userId;
-    res.redirect(`https://oauth-files-media.vercel.app/${userId}/profile`);
-  }
+  googleCallbackHandler
 );
 
 app.get('/:userId/profile', require('./middleware/renderProfile'));
-
 
 
 app.get('/', (req, res) => {
