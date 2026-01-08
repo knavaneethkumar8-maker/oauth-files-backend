@@ -6,7 +6,8 @@ const storeUserDetails = async (user) => {
   if(!foundUser) {
     const newUser = await User.create({
       username : user.username,
-      email : user.email
+      email : user.email,
+      userId : user.userId
     });
   } else {
     return console.log('user already exists');

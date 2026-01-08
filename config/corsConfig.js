@@ -9,7 +9,8 @@ const corsOptions = {
     }
   }, 
   methods : ["POST", "GET"],
-  credentials : true
+  credentials : true,
+  secure : false
 }
 
 

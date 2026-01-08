@@ -33,9 +33,11 @@ passport.use(new GoogleStrategy({
   clientSecret : process.env.GOOGLE_CLIENT_SECRET,
   callbackURL : '/auth/google/callback'
 }, async(accessToken, refreshToken, profile, done) => {
+  const email = profile.emails[0].value;
   const user = {
     username : profile.displayName,
-    email : profile.emails[0].value
+    email,
+    userId : email.split('@')[0]
   };
   storeUserDetails(user);
   console.log('profile sent');
@@ -53,12 +55,13 @@ app.get('/auth/google',
 app.get('/auth/google/callback', 
   passport.authenticate('google', {session : false}),
   (req, res) => {
-    console.log(req.user);
-    console.log(req.user.username);
-    console.log(req.user.email);
-    res.redirect('https://oauth-files-media.vercel.app/profile');
+    const user = req.user;
+    const userId = user.userId;
+    res.redirect(`https://oauth-files-media.vercel.app/${userId}/profile`);
   }
 );
+
+app.get('/:userId/profile', require('./middleware/renderProfile'));
 
 
 
