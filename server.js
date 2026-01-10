@@ -11,6 +11,7 @@ const logger = require('./middleware/logEvents');
 const passport = require('passport');
 const googleStrategy = require('./middleware/googleStrategy');
 const googleCallbackHandler = require('./middleware/googleAuth');
+const upload = require('./middleware/discStorageMulter');
 
 dotenv.config();
 const PORT = process.env.PORT || 3500;
@@ -39,6 +40,15 @@ app.get('/auth/google/callback',
 
 app.get('/:userId/profile', require('./middleware/renderProfile'));
 
+
+app.post('/upload', upload.fields([
+  {name : 'images'},
+  {name : 'files'}
+]), (req, res) => {
+  console.log('file uploaded');
+  console.log(req.files);
+  res.status(200).json({"message" : "successfully uploaded the files"});
+});
 
 app.get('/', (req, res) => {
   console.log('request came');
