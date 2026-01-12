@@ -30,6 +30,19 @@ const dropStorage = multer.diskStorage({
   }
 });
 
-const uploadDrops = multer({storage : dropStorage});
+const uploadDrops = multer({
+  storage : dropStorage,
+  fileFilter : (req, file, cb) => {
+    if(file.mimetype.startsWith('image/')){
+      console.log(file);
+      cb(null, true);
+    } else if(!file){
+      console.log(file, 'no file present');
+      cb(new multer.MulterError);
+    } else {
+      cb(new multer.MulterError);
+    }
+  }
+});
 
 module.exports = {upload, uploadDrops};

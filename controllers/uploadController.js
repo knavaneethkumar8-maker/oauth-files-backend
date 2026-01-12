@@ -24,10 +24,13 @@ const handleDropUploads = (req, res) => {
   uploadDrops.array('drops')(req, res, (err)=> {
     if(err instanceof MulterError) {
       console.log(err.message);
-      res.status(400).json({"message" : `Muleter Error : ${err.message}`});
+      res.status(400).json({"message" : `Multer Error : ${err}`, "error" : err});
     }
     console.log('reached the route');
     console.log(req.files);
+    if(!req.files.length) {
+      return res.status(400).json({"message" : "no files present"});
+    } 
     res.status(200).json({"message" : "succesfullly uploaded the dropedd data"});
   });
 }
