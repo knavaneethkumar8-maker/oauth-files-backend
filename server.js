@@ -11,7 +11,7 @@ const logger = require('./middleware/logEvents');
 const passport = require('passport');
 const googleStrategy = require('./middleware/googleStrategy');
 const googleCallbackHandler = require('./middleware/googleAuth');
-const upload = require('./middleware/discStorageMulter');
+const {upload, uploadDrops} = require('./middleware/discStorageMulter');
 const { MulterError } = require('multer');
 
 dotenv.config();
@@ -42,24 +42,13 @@ app.get('/auth/google/callback',
 app.get('/:userId/profile', require('./middleware/renderProfile'));
 
 
-app.post('/upload',(req, res) => {
-  upload.fields([{name : 'images'},{name : 'files'}])(req, res,(err) => {
-    if(err) {
-      console.log(err instanceof MulterError);
-      console.log(err.code);
-      return res.status(400).json({"message" : `${err.message}`});
-    }
+app.use('/upload', require('./routes/uploads'));
 
-    console.log('file uploaded');
-    console.log(req.files);
-    res.status(200).json({"message" : "successfully uploaded the files"});
-  });
-  
-});
+app.use('/upload/dropped',require('./routes/uploads'));
 
 app.get('/', (req, res) => {
   console.log('request came');
-  res.sendFile(path.join(__dirname, "views", "index.html"))
+  res.sendFile(path.join(__dirname, "views", "index.html"));
 });
 
 app.get('/myfile', (req, res) => {

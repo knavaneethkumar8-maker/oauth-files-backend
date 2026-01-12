@@ -16,8 +16,20 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits : {
-    fileSize : 200*200
+    fileSize : 10*1024*1024
   }
 });
 
-module.exports = upload;
+
+
+
+const dropStorage = multer.diskStorage({
+  destination : 'uploads/drops/',
+  filename : (req, file, cb) => {
+    cb(null, file.originalname);
+  }
+});
+
+const uploadDrops = multer({storage : dropStorage});
+
+module.exports = {upload, uploadDrops};
