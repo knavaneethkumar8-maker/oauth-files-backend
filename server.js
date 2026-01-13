@@ -46,6 +46,13 @@ app.use('/upload', require('./routes/uploads'));
 
 app.use('/upload/dropped',require('./routes/uploads'));
 
+app.get('/download/:fileName',(req, res) => {
+  console.log('file download sent');
+  const filePath = path.join(__dirname, 'downloads', req.params.fileName);
+  res.setHeader('Content-Disposition', 'attachment');
+  res.sendFile(filePath);
+});
+
 app.get('/', (req, res) => {
   console.log('request came');
   res.sendFile(path.join(__dirname, "views", "index.html"));
